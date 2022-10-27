@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+        web:
+            build:
+                  context: .
+                  dockerfile: Dockerfile
+            command: uvicorn src.main:app --host 0.0.0.0
+            ports:
+                  - "8000:8000"
+            volumes:
+                  - .:/src/
+            env_file:
+                  - ./.env
+            environment:
+                  - POSTGRES_HOST=db
+                  - POSTGRES_DB=salesmanagement
+                  - POSTGRES_USER=postgres
+                  - POSTGRES_PASSWORD=root
+                  - POSTGRES_PORT=5432
+                  - SECRET_KEY=1234
+                  - ALGORITHM=HS256
+                  - ACCESS_TOKEN_EXPIRE_MINUTES=30
+            depends_on:
+                  - db
+            restart: always
+            networks:
+                  - practice
+        db:
+            image: "postgres"
+            ports:
+              - "5432:5432"
+            environment:
+              - POSTGRES_HOST=localhost
+              - POSTGRES_DB=salesmanagement
+              - POSTGRES_USER=postgres
+              - POSTGRES_PASSWORD=root
+            env_file:
+              - ./.env
+            restart: always
+            networks:
+              - practice
+networks:
+        practice:
